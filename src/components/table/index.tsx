@@ -9,6 +9,27 @@ import DATA from '@/data';
 
 const columns = [
   {
+    id: 'select',
+    header: ({ table }) => (
+      <input
+        id="header-checkbox"
+        type="checkbox"
+        checked={table.getIsAllPageRowsSelected()}
+        onChange={table.getToggleAllPageRowsSelectedHandler()}
+      />
+    ),
+    cell: ({ row }) => (
+      <input
+        id={`cell-checkbox-${row.id}`}
+        type="checkbox"
+        checked={row.getIsSelected()}
+        disabled={!row.getCanSelect()}
+        onChange={row.getToggleSelectedHandler()}
+      />
+    ),
+    size: 50,
+  },
+  {
     accessorKey: 'task',
     header: 'Task',
     cell: (props) => <p>{props.getValue()}</p>,
@@ -36,12 +57,19 @@ const columns = [
 
 export const Table: React.FC = () => {
   const [data, setData] = useState(DATA);
+  const [rowSelection, setRowSelection] = useState({});
 
   const table = useReactTable({
     data,
     columns,
     getCoreRowModel: getCoreRowModel(),
+    onRowSelectionChange: setRowSelection,
+    state: {
+      rowSelection,
+    },
   });
+
+  console.log('row 선택하기', rowSelection);
 
   return (
     <table style={{ width: '100%', borderCollapse: 'collapse' }}>
