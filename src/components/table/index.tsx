@@ -1,11 +1,27 @@
 import {
   flexRender,
   getCoreRowModel,
+  getPaginationRowModel,
   useReactTable,
 } from '@tanstack/react-table';
 import { useState } from 'react';
 
 import DATA from '@/data';
+
+const PAGE_SIZE_OPTIONS = [
+  {
+    value: 20,
+    label: '20개씩 보기',
+  },
+  {
+    value: 50,
+    label: '50개씩 보기',
+  },
+  {
+    value: 100,
+    label: '100개씩 보기',
+  },
+];
 
 const columns = [
   {
@@ -63,57 +79,104 @@ export const Table: React.FC = () => {
     data,
     columns,
     getCoreRowModel: getCoreRowModel(),
+    getPaginationRowModel: getPaginationRowModel(),
     onRowSelectionChange: setRowSelection,
+
     state: {
       rowSelection,
+    },
+
+    initialState: {
+      pagination: {
+        pageSize: 20,
+      },
     },
   });
 
   console.log('row 선택하기', rowSelection);
 
   return (
-    <table style={{ width: '100%', borderCollapse: 'collapse' }}>
-      <thead>
-        {/* Table 헤더 */}
-        {table.getHeaderGroups().map((headerGroup) => (
-          <tr key={headerGroup.id}>
-            {headerGroup.headers.map((header) => (
-              <th
-                key={header.id}
-                style={{
-                  width: `${header.getSize()}px`,
-                  border: '1px solid gray',
-                  textAlign: 'center',
-                }}
-              >
-                {flexRender(
-                  header.column.columnDef.header,
-                  header.getContext(),
-                )}
-              </th>
-            ))}
-          </tr>
-        ))}
-      </thead>
+    <>
+      {/* TableControls */}
+      <div>
+        <select
+          className="my-2 rounded-[4px] border-[1px] py-1 pl-2 pr-9 text-sm"
+          value={table.getState().pagination.pageSize}
+          onChange={(e) => {
+            table.setPageSize(Number(e.target.value));
+          }}
+        >
+          {PAGE_SIZE_OPTIONS.map(({ value, label }) => (
+            <option key={label} value={value}>
+              {label}
+            </option>
+          ))}
+        </select>
+      </div>
 
-      <tbody>
-        {table.getRowModel().rows.map((row) => (
-          <tr key={row.id}>
-            {row.getVisibleCells().map((cell) => (
-              <td
-                key={cell.id}
-                style={{
-                  width: `${cell.column.getSize()}px`,
-                  border: '1px solid gray',
-                  textAlign: 'center',
-                }}
-              >
-                {flexRender(cell.column.columnDef.cell, cell.getContext())}
-              </td>
-            ))}
-          </tr>
-        ))}
-      </tbody>
-    </table>
+      {/* Table */}
+      <table style={{ width: '100%', borderCollapse: 'collapse' }}>
+        <thead>
+          {table.getHeaderGroups().map((headerGroup) => (
+            <tr key={headerGroup.id}>
+              {headerGroup.headers.map((header) => (
+                <th
+                  key={header.id}
+                  style={{
+                    width: `${header.getSize()}px`,
+                    border: '1px solid gray',
+                    textAlign: 'center',
+                  }}
+                >
+                  {flexRender(
+                    header.column.columnDef.header,
+                    header.getContext(),
+                  )}
+                </th>
+              ))}
+            </tr>
+          ))}
+        </thead>
+
+        <tbody>
+          {table.getRowModel().rows.map((row) => (
+            <tr key={row.id}>
+              {row.getVisibleCells().map((cell) => (
+                <td
+                  key={cell.id}
+                  style={{
+                    width: `${cell.column.getSize()}px`,
+                    border: '1px solid gray',
+                    textAlign: 'center',
+                  }}
+                >
+                  {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                </td>
+              ))}
+            </tr>
+          ))}
+        </tbody>
+      </table>
+      <div className="mt-[10px] flex items-center justify-center gap-2">
+        <button
+          disabled={!table.getCanPreviousPage()}
+          onClick={() => table.previousPage()}
+        >
+          {'‹'}
+        </button>
+
+        <div className="text-base font-bold">
+          Page {table.getState().pagination.pageIndex + 1} of{' '}
+          {table.getPageCount()}
+        </div>
+
+        <button
+          disabled={!table.getCanNextPage()}
+          onClick={() => table.nextPage()}
+        >
+          {'›'}
+        </button>
+      </div>
+    </>
   );
 };

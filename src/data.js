@@ -70,7 +70,7 @@ const existingNotes = [
 
 const generateRandomData = () => {
   const data = [];
-  for (let i = 0; i < 50; i++) {
+  for (let i = 0; i < 100; i++) {
     data.push({
       task: faker.hacker.verb() + ' ' + faker.hacker.noun(),
       status: faker.helpers.arrayElement(STATUSES),
