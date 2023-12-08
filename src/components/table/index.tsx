@@ -1,4 +1,6 @@
+import type { Row as TRow, Table as TTable } from '@tanstack/react-table';
 import {
+  createColumnHelper,
   flexRender,
   getCoreRowModel,
   getPaginationRowModel,
@@ -7,6 +9,26 @@ import {
 import { useState } from 'react';
 
 import DATA from '@/data';
+
+interface Status {
+  id: number;
+  name: string;
+}
+
+interface ColumnDataProps {
+  task: string;
+  status: Status;
+  due?: Date | null;
+  notes: string;
+}
+
+interface TableProps {
+  table: TTable<ColumnDataProps>;
+}
+
+interface RowProps {
+  row: TRow<ColumnDataProps>;
+}
 
 const PAGE_SIZE_OPTIONS = [
   {
@@ -23,57 +45,55 @@ const PAGE_SIZE_OPTIONS = [
   },
 ];
 
-const columns = [
-  {
-    id: 'select',
-    header: ({ table }) => (
-      <input
-        id="header-checkbox"
-        type="checkbox"
-        checked={table.getIsAllPageRowsSelected()}
-        onChange={table.getToggleAllPageRowsSelectedHandler()}
-      />
-    ),
-    cell: ({ row }) => (
-      <input
-        id={`cell-checkbox-${row.id}`}
-        type="checkbox"
-        checked={row.getIsSelected()}
-        disabled={!row.getCanSelect()}
-        onChange={row.getToggleSelectedHandler()}
-      />
-    ),
-    size: 50,
-  },
-  {
-    accessorKey: 'task',
-    header: 'Task',
-    cell: (props) => <p>{props.getValue()}</p>,
-    size: 250,
-  },
-  {
-    accessorKey: 'status',
-    header: 'Status',
-    cell: (props) => <p>{props.getValue()?.name}</p>,
-    size: 100,
-  },
-  {
-    accessorKey: 'due',
-    header: 'Due',
-    cell: (props) => <p>{props.getValue()?.toLocaleTimeString()}</p>,
-    size: 100,
-  },
-  {
-    accessorKey: 'notes',
-    header: 'Notes',
-    size: 300,
-    cell: (props) => <p>{props.getValue()}</p>,
-  },
-];
-
 export const Table: React.FC = () => {
-  const [data, setData] = useState(DATA);
+  const [data] = useState(DATA);
+
   const [rowSelection, setRowSelection] = useState({});
+
+  const columnHelper = createColumnHelper<ColumnDataProps>();
+  const columns = [
+    {
+      id: 'select',
+      header: ({ table }: TableProps) => (
+        <input
+          id="header-checkbox"
+          type="checkbox"
+          checked={table.getIsAllPageRowsSelected()}
+          onChange={table.getToggleAllPageRowsSelectedHandler()}
+        />
+      ),
+      cell: ({ row }: RowProps) => (
+        <input
+          id={`cell-checkbox-${row.id}`}
+          type="checkbox"
+          checked={row.getIsSelected()}
+          disabled={!row.getCanSelect()}
+          onChange={row.getToggleSelectedHandler()}
+        />
+      ),
+      size: 50,
+    },
+    columnHelper.accessor('task', {
+      header: 'Task',
+      cell: (props) => <p>{props.getValue()}</p>,
+      size: 250,
+    }),
+    columnHelper.accessor('status', {
+      header: 'Status',
+      cell: (props) => <p>{props.getValue().name}</p>,
+      size: 100,
+    }),
+    columnHelper.accessor('due', {
+      header: 'Due',
+      cell: (props) => <p>{props.getValue()?.toLocaleTimeString()}</p>,
+      size: 100,
+    }),
+    columnHelper.accessor('notes', {
+      header: 'Notes',
+      size: 300,
+      cell: (props) => <p>{props.getValue()}</p>,
+    }),
+  ];
 
   const table = useReactTable({
     data,
@@ -92,8 +112,6 @@ export const Table: React.FC = () => {
       },
     },
   });
-
-  console.log('row 선택하기', rowSelection);
 
   return (
     <>
