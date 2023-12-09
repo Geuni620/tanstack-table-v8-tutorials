@@ -14,6 +14,7 @@ import { ArrowUpDown } from 'lucide-react';
 import { useState } from 'react';
 
 import { Button } from '@/components/ui/button';
+import { Checkbox } from '@/components/ui/checkbox';
 import { Input } from '@/components/ui/input';
 import {
   Table,
@@ -45,11 +46,6 @@ interface RowProps {
   row: TRow<ColumnDataProps>;
 }
 
-interface Filter {
-  id: string;
-  value: string;
-}
-
 const PAGE_SIZE_OPTIONS = [
   {
     value: 20,
@@ -72,25 +68,27 @@ export const TableComponents: React.FC = () => {
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
   const [sorting, setSorting] = useState<SortingState>([]);
 
+  console.log(rowSelection);
+
   const columnHelper = createColumnHelper<ColumnDataProps>();
   const columns = [
     {
       id: 'select',
       header: ({ table }: TableProps) => (
-        <input
-          id="header-checkbox"
-          type="checkbox"
-          checked={table.getIsAllPageRowsSelected()}
-          onChange={table.getToggleAllPageRowsSelectedHandler()}
+        <Checkbox
+          checked={
+            table.getIsAllPageRowsSelected() ||
+            (table.getIsSomePageRowsSelected() && 'indeterminate')
+          }
+          onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)}
+          aria-label="Select all"
         />
       ),
       cell: ({ row }: RowProps) => (
-        <input
-          id={`cell-checkbox-${row.id}`}
-          type="checkbox"
+        <Checkbox
           checked={row.getIsSelected()}
-          disabled={!row.getCanSelect()}
-          onChange={row.getToggleSelectedHandler()}
+          onCheckedChange={(value) => row.toggleSelected(!!value)}
+          aria-label="Select row"
         />
       ),
       size: 50,
@@ -102,7 +100,7 @@ export const TableComponents: React.FC = () => {
             className="flex cursor-pointer items-center justify-center"
             onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}
           >
-            Email
+            Task
             <ArrowUpDown className="ml-2 h-4 w-4" />
           </div>
         );
@@ -155,6 +153,9 @@ export const TableComponents: React.FC = () => {
     },
   });
 
+  /**
+   * @description: https://youtu.be/CjqG277Hmgg?si=7u3PV5j-giv2cuB8&t=2044
+   */
   // const taskName =
   //   columnFilters.find((column) => column.id === 'task')?.value ?? '';
 
@@ -204,6 +205,7 @@ export const TableComponents: React.FC = () => {
                     width: `${header.getSize()}px`,
                     border: '1px solid gray',
                     textAlign: 'center',
+                    padding: 0,
                   }}
                 >
                   {flexRender(
@@ -226,6 +228,7 @@ export const TableComponents: React.FC = () => {
                     width: `${cell.column.getSize()}px`,
                     border: '1px solid gray',
                     textAlign: 'center',
+                    padding: '0.5rem 0.5rem',
                   }}
                 >
                   {flexRender(cell.column.columnDef.cell, cell.getContext())}

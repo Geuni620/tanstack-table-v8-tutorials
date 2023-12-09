@@ -11,6 +11,7 @@
     "eslint": "eslint ./ --ext .ts,.tsx,.js,.jsx --fix"
   },
   "dependencies": {
+    "@radix-ui/react-checkbox": "^1.0.4",
     "@radix-ui/react-slot": "^1.0.2",
     "@tanstack/react-table": "^8.10.7",
     "class-variance-authority": "^0.7.0",
