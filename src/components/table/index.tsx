@@ -5,6 +5,7 @@ import {
   getCoreRowModel,
   getFilteredRowModel,
   getPaginationRowModel,
+  getSortedRowModel,
   useReactTable,
 } from '@tanstack/react-table';
 import { useState } from 'react';
@@ -98,16 +99,19 @@ export const TableComponents: React.FC = () => {
       header: 'Status',
       cell: (props) => <p>{props.getValue().name}</p>,
       size: 100,
+      enableSorting: false,
     }),
     columnHelper.accessor('due', {
       header: 'Due',
       cell: (props) => <p>{props.getValue()?.toLocaleTimeString()}</p>,
       size: 100,
+      enableSorting: false,
     }),
     columnHelper.accessor('notes', {
       header: 'Notes',
       size: 300,
       cell: (props) => <p>{props.getValue()}</p>,
+      enableSorting: false,
     }),
   ];
 
@@ -118,6 +122,7 @@ export const TableComponents: React.FC = () => {
     getPaginationRowModel: getPaginationRowModel(),
     getFilteredRowModel: getFilteredRowModel(),
     onRowSelectionChange: setRowSelection,
+    getSortedRowModel: getSortedRowModel(),
 
     state: {
       rowSelection,
@@ -186,6 +191,20 @@ export const TableComponents: React.FC = () => {
                     header.column.columnDef.header,
                     header.getContext(),
                   )}
+                  {header.column.getCanSort() && (
+                    <div
+                      className="cursor-pointer"
+                      onClick={header.column.getToggleSortingHandler()}
+                    >
+                      {'<'}
+                    </div>
+                  )}
+                  {
+                    {
+                      asc: '▲',
+                      desc: '▼',
+                    }[header.column.getIsSorted()]
+                  }
                 </TableHead>
               ))}
             </TableRow>
