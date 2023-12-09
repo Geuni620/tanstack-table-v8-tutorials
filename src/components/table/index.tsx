@@ -6,8 +6,10 @@ import {
   getFilteredRowModel,
   getPaginationRowModel,
   getSortedRowModel,
+  SortingState,
   useReactTable,
 } from '@tanstack/react-table';
+import { ArrowUpDown } from 'lucide-react';
 import { useState } from 'react';
 
 import { Button } from '@/components/ui/button';
@@ -67,6 +69,7 @@ export const TableComponents: React.FC = () => {
 
   const [rowSelection, setRowSelection] = useState({});
   const [columnFilters, setColumnFilters] = useState<Filter[]>([]);
+  const [sorting, setSorting] = useState<SortingState>([]);
 
   const columnHelper = createColumnHelper<ColumnDataProps>();
   const columns = [
@@ -92,7 +95,18 @@ export const TableComponents: React.FC = () => {
       size: 50,
     },
     columnHelper.accessor('task', {
-      header: 'Task',
+      header: ({ column }) => {
+        return (
+          <div
+            className="flex cursor-pointer items-center justify-center"
+            onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}
+          >
+            Email
+            <ArrowUpDown className="ml-2 h-4 w-4" />
+          </div>
+        );
+      },
+
       cell: (props) => <p>{props.getValue()}</p>,
       size: 250,
     }),
@@ -122,12 +136,14 @@ export const TableComponents: React.FC = () => {
     getCoreRowModel: getCoreRowModel(),
     getPaginationRowModel: getPaginationRowModel(),
     getFilteredRowModel: getFilteredRowModel(),
-    onRowSelectionChange: setRowSelection,
     getSortedRowModel: getSortedRowModel(),
+    onRowSelectionChange: setRowSelection,
+    onSortingChange: setSorting,
 
     state: {
       rowSelection,
       columnFilters,
+      sorting,
     },
 
     initialState: {
@@ -192,20 +208,6 @@ export const TableComponents: React.FC = () => {
                     header.column.columnDef.header,
                     header.getContext(),
                   )}
-                  {header.column.getCanSort() && (
-                    <div
-                      className="cursor-pointer"
-                      onClick={header.column.getToggleSortingHandler()}
-                    >
-                      {'<'}
-                    </div>
-                  )}
-                  {
-                    {
-                      asc: '▲',
-                      desc: '▼',
-                    }[header.column.getIsSorted()]
-                  }
                 </TableHead>
               ))}
             </TableRow>
