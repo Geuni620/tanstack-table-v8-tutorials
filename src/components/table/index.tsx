@@ -8,6 +8,14 @@ import {
 } from '@tanstack/react-table';
 import { useState } from 'react';
 
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from '@/components/ui/table';
 import DATA from '@/data';
 
 interface Status {
@@ -45,7 +53,7 @@ const PAGE_SIZE_OPTIONS = [
   },
 ];
 
-export const Table: React.FC = () => {
+export const TableComponents: React.FC = () => {
   const [data] = useState(DATA);
 
   const [rowSelection, setRowSelection] = useState({});
@@ -133,12 +141,12 @@ export const Table: React.FC = () => {
       </div>
 
       {/* Table */}
-      <table style={{ width: '100%', borderCollapse: 'collapse' }}>
-        <thead>
+      <Table style={{ width: '100%', borderCollapse: 'collapse' }}>
+        <TableHeader>
           {table.getHeaderGroups().map((headerGroup) => (
-            <tr key={headerGroup.id}>
+            <TableRow key={headerGroup.id}>
               {headerGroup.headers.map((header) => (
-                <th
+                <TableHead
                   key={header.id}
                   style={{
                     width: `${header.getSize()}px`,
@@ -150,17 +158,17 @@ export const Table: React.FC = () => {
                     header.column.columnDef.header,
                     header.getContext(),
                   )}
-                </th>
+                </TableHead>
               ))}
-            </tr>
+            </TableRow>
           ))}
-        </thead>
+        </TableHeader>
 
-        <tbody>
+        <TableBody>
           {table.getRowModel().rows.map((row) => (
-            <tr key={row.id}>
+            <TableRow key={row.id}>
               {row.getVisibleCells().map((cell) => (
-                <td
+                <TableCell
                   key={cell.id}
                   style={{
                     width: `${cell.column.getSize()}px`,
@@ -169,12 +177,12 @@ export const Table: React.FC = () => {
                   }}
                 >
                   {flexRender(cell.column.columnDef.cell, cell.getContext())}
-                </td>
+                </TableCell>
               ))}
-            </tr>
+            </TableRow>
           ))}
-        </tbody>
-      </table>
+        </TableBody>
+      </Table>
       <div className="mt-[10px] flex items-center justify-center gap-2">
         <button
           disabled={!table.getCanPreviousPage()}
