@@ -4,7 +4,7 @@ import { TableCaption } from '@/components/ui/table';
 function App() {
   return (
     <div className="h-screen w-screen">
-      <div className="mx-auto w-[900px]">
+      <div className="mx-auto w-[900px] pb-20 pt-10">
         <TableCaption className="mb-10 text-3xl font-bold">
           Tanstack Table
         </TableCaption>

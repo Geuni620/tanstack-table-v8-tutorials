@@ -10,6 +10,7 @@ import {
 } from '@tanstack/react-table';
 import { useState } from 'react';
 
+import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import {
   Table,
@@ -230,25 +231,30 @@ export const TableComponents: React.FC = () => {
           ))}
         </TableBody>
       </Table>
+
       <div className="mt-[10px] flex items-center justify-center gap-2">
-        <button
-          disabled={!table.getCanPreviousPage()}
+        <Button
+          variant="outline"
+          size="sm"
           onClick={() => table.previousPage()}
+          disabled={!table.getCanPreviousPage()}
         >
           {'‹'}
-        </button>
+        </Button>
 
-        <div className="text-base font-bold">
+        <div className="text-sm font-bold text-slate-500">
           Page {table.getState().pagination.pageIndex + 1} of{' '}
           {table.getPageCount()}
         </div>
 
-        <button
+        <Button
+          variant="outline"
+          size="sm"
           disabled={!table.getCanNextPage()}
           onClick={() => table.nextPage()}
         >
           {'›'}
-        </button>
+        </Button>
       </div>
     </>
   );
