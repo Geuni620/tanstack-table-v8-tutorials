@@ -229,6 +229,7 @@ export const TableComponents: React.FC = () => {
                     border: '1px solid gray',
                     textAlign: 'center',
                     padding: '0.5rem 0.5rem',
+                    height: '40px',
                   }}
                 >
                   {flexRender(cell.column.columnDef.cell, cell.getContext())}
