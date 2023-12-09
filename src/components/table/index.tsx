@@ -40,6 +40,11 @@ interface RowProps {
   row: TRow<ColumnDataProps>;
 }
 
+interface Filter {
+  id: string;
+  value: string;
+}
+
 const PAGE_SIZE_OPTIONS = [
   {
     value: 20,
@@ -59,7 +64,7 @@ export const TableComponents: React.FC = () => {
   const [data] = useState(DATA);
 
   const [rowSelection, setRowSelection] = useState({});
-  const [columnFilters, setColumnFilters] = useState([]);
+  const [columnFilters, setColumnFilters] = useState<Filter[]>([]);
 
   const columnHelper = createColumnHelper<ColumnDataProps>();
   const columns = [
@@ -126,11 +131,28 @@ export const TableComponents: React.FC = () => {
     },
   });
 
+  const taskName =
+    columnFilters.find((column) => column.id === 'task')?.value ?? '';
+
+  const onFilterChange = ({ id, value }: Filter) => {
+    setColumnFilters((prev) =>
+      prev.filter((column) => column.id !== id).concat({ id, value }),
+    );
+  };
+
   return (
     <>
       {/* TableControls */}
       <div className="mb-2 flex items-center justify-between gap-2">
-        <Input className="w-[20%]" type="text" placeholder="Task name" />
+        <Input
+          className="w-[20%]"
+          type="text"
+          placeholder="Task name"
+          value={taskName}
+          onChange={(e) =>
+            onFilterChange({ id: 'task', value: e.target.value })
+          }
+        />
         <select
           className="my-2 rounded-[4px] border-[1px] py-1 pl-2 pr-9 text-sm"
           value={table.getState().pagination.pageSize}
