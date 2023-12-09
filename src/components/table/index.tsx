@@ -1,5 +1,6 @@
 import type { Row as TRow, Table as TTable } from '@tanstack/react-table';
 import {
+  ColumnFiltersState,
   createColumnHelper,
   flexRender,
   getCoreRowModel,
@@ -68,7 +69,7 @@ export const TableComponents: React.FC = () => {
   const [data] = useState(DATA);
 
   const [rowSelection, setRowSelection] = useState({});
-  const [columnFilters, setColumnFilters] = useState<Filter[]>([]);
+  const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
   const [sorting, setSorting] = useState<SortingState>([]);
 
   const columnHelper = createColumnHelper<ColumnDataProps>();
@@ -139,6 +140,7 @@ export const TableComponents: React.FC = () => {
     getSortedRowModel: getSortedRowModel(),
     onRowSelectionChange: setRowSelection,
     onSortingChange: setSorting,
+    onColumnFiltersChange: setColumnFilters,
 
     state: {
       rowSelection,
@@ -153,14 +155,14 @@ export const TableComponents: React.FC = () => {
     },
   });
 
-  const taskName =
-    columnFilters.find((column) => column.id === 'task')?.value ?? '';
+  // const taskName =
+  //   columnFilters.find((column) => column.id === 'task')?.value ?? '';
 
-  const onFilterChange = ({ id, value }: Filter) => {
-    setColumnFilters((prev) =>
-      prev.filter((column) => column.id !== id).concat({ id, value }),
-    );
-  };
+  // const onFilterChange = ({ id, value }: Filter) => {
+  //   setColumnFilters((prev) =>
+  //     prev.filter((column) => column.id !== id).concat({ id, value }),
+  //   );
+  // };
 
   return (
     <>
@@ -170,9 +172,9 @@ export const TableComponents: React.FC = () => {
           className="w-[20%]"
           type="text"
           placeholder="Task name"
-          value={taskName}
+          value={(table.getColumn('task')?.getFilterValue() as string) ?? ''}
           onChange={(e) =>
-            onFilterChange({ id: 'task', value: e.target.value })
+            table.getColumn('task')?.setFilterValue(e.target.value)
           }
         />
         <select
