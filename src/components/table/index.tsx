@@ -3,11 +3,13 @@ import {
   createColumnHelper,
   flexRender,
   getCoreRowModel,
+  getFilteredRowModel,
   getPaginationRowModel,
   useReactTable,
 } from '@tanstack/react-table';
 import { useState } from 'react';
 
+import { Input } from '@/components/ui/input';
 import {
   Table,
   TableBody,
@@ -57,6 +59,7 @@ export const TableComponents: React.FC = () => {
   const [data] = useState(DATA);
 
   const [rowSelection, setRowSelection] = useState({});
+  const [columnFilters, setColumnFilters] = useState([]);
 
   const columnHelper = createColumnHelper<ColumnDataProps>();
   const columns = [
@@ -108,10 +111,12 @@ export const TableComponents: React.FC = () => {
     columns,
     getCoreRowModel: getCoreRowModel(),
     getPaginationRowModel: getPaginationRowModel(),
+    getFilteredRowModel: getFilteredRowModel(),
     onRowSelectionChange: setRowSelection,
 
     state: {
       rowSelection,
+      columnFilters,
     },
 
     initialState: {
@@ -124,7 +129,8 @@ export const TableComponents: React.FC = () => {
   return (
     <>
       {/* TableControls */}
-      <div>
+      <div className="mb-2 flex items-center justify-between gap-2">
+        <Input className="w-[20%]" type="text" placeholder="Task name" />
         <select
           className="my-2 rounded-[4px] border-[1px] py-1 pl-2 pr-9 text-sm"
           value={table.getState().pagination.pageSize}
