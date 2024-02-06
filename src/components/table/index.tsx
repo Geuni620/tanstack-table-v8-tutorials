@@ -11,7 +11,7 @@ import {
   useReactTable,
 } from '@tanstack/react-table';
 import { ArrowUpDown } from 'lucide-react';
-import { useState } from 'react';
+import { useCallback, useState } from 'react';
 
 import { Button } from '@/components/ui/button';
 import { Checkbox } from '@/components/ui/checkbox';
@@ -68,9 +68,26 @@ export const TableComponents: React.FC = () => {
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
   const [sorting, setSorting] = useState<SortingState>([]);
 
-  console.log(rowSelection);
+  const [selectedCells, setSelectedCells] = useState(new Set());
+  const [dragging, setDragging] = useState(false);
+  const [draggingStart, setDraggingStart] = useState(false);
+
+  const handleCellClick = (cellId: string) => {
+    setSelectedCells((prevSelectedCells) => {
+      const newSelectedCells = new Set(prevSelectedCells);
+      if (newSelectedCells.has(cellId)) {
+        newSelectedCells.delete(cellId);
+      } else {
+        newSelectedCells.add(cellId);
+      }
+      return newSelectedCells;
+    });
+  };
+
+  console.log('selectedCells', selectedCells);
 
   const columnHelper = createColumnHelper<ColumnDataProps>();
+
   const columns = [
     {
       id: 'select',
@@ -224,12 +241,17 @@ export const TableComponents: React.FC = () => {
               {row.getVisibleCells().map((cell) => (
                 <TableCell
                   key={cell.id}
+                  onClick={() => handleCellClick(cell.id)}
                   style={{
+                    userSelect: 'none',
                     width: `${cell.column.getSize()}px`,
                     border: '1px solid gray',
                     textAlign: 'center',
                     padding: '0.5rem 0.5rem',
                     height: '40px',
+                    backgroundColor: selectedCells.has(cell.id)
+                      ? 'lightblue'
+                      : 'white',
                   }}
                 >
                   {flexRender(cell.column.columnDef.cell, cell.getContext())}
